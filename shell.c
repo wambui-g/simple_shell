@@ -1,5 +1,6 @@
 #include "shell.h"
 
+
 /**
  * main - simple shell
  *
@@ -10,7 +11,8 @@ int main(void)
 	char input[MAX_INPUT_LENGTH];
 	char prompt[] = "$ ";
 	size_t prompt_length = sizeof(prompt) - 1;
-
+	
+	/* Infinite while loop */
 	while (1)
 	{
 		int interact_mode = isatty(STDIN_FILENO);
@@ -31,7 +33,7 @@ int main(void)
 		}
 
 		/* function for checking input */
-		/* input_check(input, interactive_mode); */
+		input_check(input, interact_mode);
 	}
 	return (0);
 }

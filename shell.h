@@ -9,4 +9,6 @@
 
 #define MAX_INPUT_LENGTH 1024
 
+void input_check(char *input, int interactive_mode);
+
 #endif
