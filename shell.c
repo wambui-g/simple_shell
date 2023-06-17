@@ -11,29 +11,44 @@ int main(void)
 	char input[MAX_INPUT_LENGTH];
 	char prompt[] = "$ ";
 	size_t prompt_length = sizeof(prompt) - 1;
-	
-	/* Infinite while loop */
+
 	while (1)
 	{
-		int interact_mode = isatty(STDIN_FILENO);
-
 		write(STDOUT_FILENO, prompt, prompt_length);
-
-		/* Read user input */
 		ssize_t input_length = read(STDIN_FILENO, input, sizeof(input));
 
-		/* check EoF (Ctrl + D) */
 		if (input_length == 0)
 			break;
 
 		if (input_length == -1)
 		{
-			write(STDERR_FILENO, "Read failed\n", 12);
+			perror("Read failed\n");
 			break;
 		}
+		input[input_length - 1] = '\0';
+		int inp_exit = (input_length == 5 && input[0] == 'e' && input[1] == 'x'
+				&& input[2] == 'i' && input[3] == 't' && input[4] == '\0');
+		if (inp_exit)
+			break;
+		pid_t pid = fork();
 
-		/* function for checking input */
-		input_check(input, interact_mode);
+		if (pid < 0)
+		{
+			perror("Fork failure\n");
+		}
+		else if (pid == 0)
+		{
+			char *const argv[] = {input, NULL};
+
+			execve(input, argv, NULL);
+
+			char err_msg[] = ": No such file or directory\n";
+
+			write(STDERR_FILENO, err_msg, sizeof(err_msg) - 1);
+			_exit(1);
+		}
+		else
+			wait(NULL);
 	}
 	return (0);
 }
