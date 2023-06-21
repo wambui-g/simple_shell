@@ -17,7 +17,6 @@ int execute_args(char **args)
 	int i = 0;
 
 	if (args[0] == NULL)
-		/* empty command was entered */
 		return (-1);
 
 	/* find if the command is a builtin */
