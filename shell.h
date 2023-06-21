@@ -1,14 +1,37 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <string.h>
+/*---LIBRARIES---*/
 #include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
 
-#define MAX_INPUT_LENGTH 1024
+/*---Macros---*/
+#define TOK_DELIM " \t\r\n\a\""
+extern char **environ;
 
-void input_check(char *input, int interactive_mode);
+/*---PROTOTYPES---*/
+/* main.c */
+void shell_interactive(void);
+void shell_no_interactive(void);
+
+/* shell_interactive.c */
+char *read_line(void);
+char **split_line(char *line);
+int execute_args(char **args);
+
+/* execute_args */
+int new_process(char **args);
+
+/* shell_no_interactive */
+char *read_stream(void);
+
+/*---Builtin func---*/
+int own_cd(char **args);
+int own_exit(char **args);
+int own_env(char **args);
+int own_help(char **args);
 
 #endif
