@@ -1,0 +1,549 @@
+#ifndef SHELL_H
+#define SHELL_H
+
+/*---LIBRARIES---*/
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
+
+/*---Macros---*/
+#define TOK_DELIM " \t\r\n\a\""
+extern char **environ;
+
+/*---PROTOTYPES---*/
+/* main.c */
+void shell_interactive(void);
+void shell_no_interactive(void);
+
+/* shell_interactive.c */
+char *read_line(void);
+char **split_line(char *line);
+int execute_args(char **args);
+
+/* execute_args */
+int new_process(char **args);
+
+/* shell_no_interactive */
+char *read_stream(void);
+
+/*---Builtin func---*/
+int own_cd(char **args);
+int own_exit(char **args);
+int own_env(char **args);
+int own_help(char **args);
+
+#endif
+
+
+
+
+The code includes the "shell.h" header file, which presumably contains the necessary libraries and function declarations for the code to work.
+
+The main function is the entry point of the program. It has a return type of int, indicating that it should return an integer value.
+
+The main function does not take any command line arguments, as the void parameter list indicates.
+
+The main function begins with an if statement to check if the standard input file descriptor (STDIN_FILENO) is associated with a terminal using the isatty function.
+
+The isatty function is used to determine whether a given file descriptor refers to a terminal or not. In this case, it checks if STDIN_FILENO is associated with a terminal by passing it as an argument. The function returns 1 if it is a terminal and 0 otherwise.
+
+If the isatty function returns 1, it means that the shell is being run in an interactive mode, where user input is expected and output is displayed to the terminal.
+
+In the case where isatty returns 1, the shell_interactive function is called. It is not shown in the provided code snippet but is likely defined in the "shell.h" header file or in another source file. This function presumably contains the logic for an interactive shell, where users can input commands and receive output.
+
+If isatty returns 0, it means that the shell is being run in a non-interactive mode, where input and output may be redirected from files or other sources.
+
+In the case where isatty returns 0, the shell_no_interactive function is called. Similar to shell_interactive, it is not shown in the provided code snippet but likely contains the logic for a non-interactive shell, where commands are read from a file or another source and the output is redirected accordingly.
+
+After executing the appropriate shell function, the main function returns 0 to indicate successful execution.
+
+In summary, this code checks if the shell is being run in an interactive or non-interactive mode based on whether STDIN_FILENO is associated with a terminal using the isatty function. It then calls the corresponding shell function (shell_interactive or shell_no_interactive) to handle the logic for the respective mode.
+
+/* main.c */
+#include "shell.h"
+
+/**
+ * main - function that checks if our shell is called
+ *
+ * Return: 0 on success
+ */
+ 
+int main(void)
+{
+ /* determines if file descriptor is associated with a terminal */
+ if (isatty(STDIN_FILENO) == 1)
+ {
+  shell_interactive();
+ }
+ else
+ {
+  shell_no_interactive();
+ }
+ return (0);
+}
+
+
+
+The code includes the "shell.h" header file, which presumably contains the necessary libraries and function declarations for the code to work.
+
+The shell_interactive function is defined, which is responsible for implementing a UNIX command line interpreter.
+
+The function has a return type of void, indicating that it does not return any value.
+
+The function begins with the declaration of variables line and args. These variables are used to store the input line and the tokenized arguments, respectively.
+
+The status variable is initialized to -1. This variable is used to store the status code of the executed command.
+
+The code enters a do-while loop, which allows for repeated execution of the shell prompt and command processing.
+
+Inside the loop, the function prints the shell prompt symbol simple_prompt$ using printf.
+
+The read_line function is called to read a line of input from the user. The exact implementation of this function is not shown in the code snippet, but it is likely defined in the "shell.h" header file or in another source file. It reads the input line from the standard input (stdin) and returns a dynamically allocated string containing the line.
+
+The split_line function is called, which is also not shown in the code snippet but likely defined in the "shell.h" header file or in another source file. This function takes the input line as an argument and tokenizes it into individual arguments based on whitespace. It returns a dynamically allocated array of strings, where each string represents an argument.
+
+The execute_args function is called, passing the args array as an argument. This function is responsible for executing the command represented by the arguments. Again, the implementation of this function is not shown in the code snippet, but it is likely defined in the "shell.h" header file or in another source file. The execute_args function returns the status code of the executed command.
+
+After executing the command, the line and args variables are freed using the free function to avoid memory leaks. This ensures that the dynamically allocated memory for the input line and arguments is properly deallocated.
+
+The code then checks the value of status. If status is greater than or equal to 0, it means that the executed command requested an exit from the shell. In this case, the exit function is called with the status as an argument to exit the shell with the provided status code.
+
+If the status is -1, the loop continues, prompting for the next command.
+
+In summary, this code implements an interactive UNIX command line interpreter. It repeatedly prompts the user for commands, reads the input line, tokenizes it into arguments, executes the command, and repeats the process until an exit command is executed. The code ensures proper memory management by freeing the dynamically allocated memory before each iteration.
+
+
+
+/* shell_interactive.c */
+#include "shell.h"
+
+/**
+ * shell_interactive - UNIX command line interpreter
+ *
+ * Return: void
+ */
+ 
+void shell_interactive(void)
+{
+ char *line;
+ char **args;
+ int status = -1;
+
+do {
+  printf("simple_prompt$ "); /* print prompt symbol */
+  line = read_line(); /* read line from stdin */
+  args = split_line(line); /* tokenize line */
+  status = execute_args(args);
+  
+  /* avoid memory leaks */
+  free(line);
+  free(args);
+  
+  /* exit with status */
+  if (status >= 0)
+  
+   exit(status);
+
+ } while (status == -1);
+}
+
+
+
+
+The code includes the "shell.h" header file, which presumably contains the necessary libraries and function declarations for the code to work.
+
+The read_line function is defined, which is responsible for reading a line from the standard input (stdin).
+
+The function has a return type of char *, indicating that it returns a pointer to a string (character array) that represents the content of the read line.
+
+The function begins by declaring variables line and bufsize. line is initialized to NULL, and bufsize is set to 0.
+
+The getline function is called, which reads a line from the standard input and stores it in the line variable. It also dynamically allocates memory to accommodate the input line.
+
+The getline function takes three arguments: the address of the line variable (to store the read line), the address of the bufsize variable (to store the size of the allocated buffer), and stdin (to read from the standard input).
+
+If getline returns -1, it means an error occurred while reading the line. The code checks if the end-of-file (EOF) indicator has been set by feof(stdin). If it is set, it means that the user entered Ctrl + D, indicating the end of input. In this case, the code frees the memory allocated for line using free to avoid memory leaks and then exits the program with a success status code (EXIT_SUCCESS).
+
+If the EOF indicator is not set, it means an error occurred while reading the line. The code again frees the memory allocated for line using free to avoid memory leaks. Then, the perror function is called to print an error message indicating the error that occurred during line reading. Finally, the program exits with a failure status code (EXIT_FAILURE).
+
+If getline is successful and the line is read without any errors, the function returns the line pointer, which points to the string containing the read line.
+
+In summary, this code defines a function read_line that reads a line from the standard input using getline. It handles cases where getline fails or the end-of-file indicator is set. If an error occurs, it prints an error message and exits the program. If the line is read successfully, it returns a pointer to the string containing the read line.
+
+
+
+
+
+/* read_line.c */
+#include "shell.h"
+
+/**
+ * read_line - read a line from stdin
+ *
+ * Return: pointer that points to a str with the line content
+ */
+ 
+char *read_line(void)
+{
+	char *line = NULL;
+	size_t bufsize = 0;
+	
+	if (getline(&line, &bufsize, stdin) == -1) /* if getline fails */
+	{
+		if (feof(stdin)) /* test for the eof */
+		{
+			free(line); /* avoid memory leaks when ctrl + d */exit(EXIT_SUCCESS); /* we recieved an eof */
+  }
+  else
+  {
+   free(line); /* avoid memory leaks when getline fails */
+   perror("error while reading the line from stdin");
+   exit(EXIT_FAILURE);
+  }
+ }
+ return (line);
+}
+
+
+
+The code includes the "shell.h" header file, which presumably contains the necessary libraries and function declarations for the code to work.
+
+The split_line function is defined, which is responsible for splitting a string into multiple strings (tokens) based on a delimiter.
+
+The function has a return type of char **, indicating that it returns a pointer to an array of strings.
+
+The function takes a parameter line, which is the string to be split.
+
+The function begins by declaring variables bufsize, i, tokens, and token. bufsize is set to 64, i is initialized to 0, and tokens is allocated memory to accommodate the array of strings. token is a temporary variable used in the tokenization process.
+
+The code checks if the memory allocation for tokens using malloc was successful. If not, it prints an error message using fprintf and exits the program with a failure status code (EXIT_FAILURE).
+
+The strtok function is used to split the line into tokens based on a delimiter (TOK_DELIM). It returns a pointer to the first token found in line. If no token is found, it returns NULL.
+
+The code enters a while loop that continues as long as the token is not NULL. Inside the loop, it performs the following actions:
+
+a. It checks if the first character of the token is a '#' symbol, indicating a comment. If it is, the loop is broken, as comments are not included in the tokenized array.
+
+b. It assigns the token to the tokens array at index i.
+
+c. It increments i to prepare for the next token.
+
+d. It checks if i is equal to or exceeds bufsize, indicating that the allocated memory for tokens is not sufficient. In this case, it doubles the bufsize and reallocates memory for tokens using realloc. If the memory reallocation fails, it prints an error message and exits the program with a failure status code.
+
+e. It calls strtok again with NULL as the first argument to retrieve the next token from the remaining part of the line.
+
+After the while loop, the code assigns NULL to tokens[i] to mark the end of the array of strings.
+
+Finally, the function returns the tokens pointer, which points to the array of tokenized strings.
+
+In summary, this code defines a function split_line that splits a string into multiple strings (tokens) based on a delimiter. It dynamically allocates memory for the tokenized strings and handles cases where memory allocation fails. It also skips comments that start with '#' symbol. The function returns a pointer to the array of tokenized strings.
+
+
+
+/* split_line.c */
+#include "shell.h"
+
+/**
+ * split_line - split a string into multiple strings
+ * @line: string to be splited
+ *
+ * Return: pointer that points to the new array
+ */
+ 
+char **split_line(char *line)
+{
+ int bufsize = 64;
+ int i = 0;
+ char **tokens = malloc(bufsize * sizeof(char *));
+ char *token;
+
+if (!tokens)
+ {
+  fprintf(stderr, "allocation error in split_line: tokens\n");
+  exit(EXIT_FAILURE);
+ }
+ token = strtok(line, TOK_DELIM);
+ while (token != NULL)
+ {
+  /* handle comments */
+  if (token[0] == '#')
+  {
+   break;
+  }
+  tokens[i] = token;
+  i++;
+  if (i >= bufsize)
+  {
+   bufsize += bufsize;
+   tokens = realloc(tokens, bufsize * sizeof(char *));
+   if (!tokens)
+   {
+    fprintf(stderr, "reallocation error in split_line: tokens");
+    exit(EXIT_FAILURE);
+   }
+  }
+  token = strtok(NULL, TOK_DELIM);
+ }
+ tokens[i] = NULL;
+ return (tokens);
+}
+
+
+
+The code includes the "shell.h" header file, which presumably contains the necessary libraries and function declarations for the code to work.
+
+The execute_args function is defined, which is responsible for determining whether a command is a built-in command or an external process and executing it accordingly.
+
+The function has a return type of int, indicating that it returns an integer value.
+
+The function takes a parameter args, which is an array of strings containing the command and its flags.
+
+The function begins by declaring two arrays: builtin_func_list and builtin_func. builtin_func_list stores the names of built-in commands, and builtin_func stores function pointers to the corresponding functions that implement the built-in commands.
+
+The code checks if the first element of the args array (args[0]) is NULL, which would indicate an empty command was entered. If it is NULL, the function returns -1 to indicate an error or invalid command.
+
+The code then iterates through the builtin_func_list array using a for loop. It compares each element of args[0] (the entered command) with the elements of builtin_func_list using the strcmp function.
+
+If a match is found (i.e., the entered command is a built-in command), the corresponding function from builtin_func is called by dereferencing the function pointer using (*builtin_func[i])(args). The args array is passed as an argument to the built-in function. The return value of the built-in function is then returned from the execute_args function.
+
+If no match is found (i.e., the entered command is not a built-in command), the code calls the new_process function to create a new process and execute the external command. The args array is passed as an argument to the new_process function. The return value of the new_process function is then returned from the execute_args function.
+
+In summary, this code defines a function execute_args that determines whether a command is a built-in command or an external process. It compares the entered command with a list of built-in commands and executes the corresponding built-in command if a match is found. If no match is found, it creates a new process and executes the external command. The return value indicates the success or failure of the execution.
+
+
+
+/* execute_args.c */
+#include "shell.h"
+
+/**
+ * execute_args - map if command is a builtin or a process
+ * @args: command and its flags
+ *
+ * Return: 1 on sucess, 0 otherwise
+ */
+ 
+int execute_args(char **args)
+{
+char *builtin_func_list[] = {
+"cd",
+"env",
+  "help",
+  "exit"
+ };
+ int (*builtin_func[])(char **) = {
+  &own_cd,
+  &own_env,
+  &own_help,
+  &own_exit
+ };
+ int i = 0;
+
+if (args[0] == NULL)
+ {
+  /* empty command was entered */
+  return (-1);
+ }
+ /* find if the command is a builtin */
+ for (; i < sizeof(builtin_func_list) / sizeof(char *); i++)
+ {
+  /* if there is a match execute the builtin command */
+  if (strcmp(args[0], builtin_func_list[i]) == 0)
+  {
+   return ((*builtin_func[i])(args));
+  }
+ }
+ /* create a new process */
+ return (new_process(args));
+}
+
+
+
+The code includes the "shell.h" header file, which presumably contains the necessary libraries and function declarations for the code to work.
+
+The new_process function is defined, which is responsible for creating a new process and executing an external command.
+
+The function has a return type of int, indicating that it returns an integer value.
+
+The function takes a parameter args, which is an array of strings containing the command and its flags.
+
+The function begins by declaring variables pid and status. pid is of type pid_t, which represents a process ID, and status is of type int, which will be used to store the exit status of the child process.
+
+The code calls the fork function to create a new process. The fork function creates a child process that is a copy of the parent process. The return value of fork is used to determine whether the code is executing in the parent process or the child process.
+
+If pid is equal to 0, it means the code is executing in the child process. Inside the child process, it calls the execvp function to execute the external command specified by args[0], passing args as the argument list. If execvp returns -1, it indicates an error occurred. In this case, the perror function is called to print an error message, and the child process exits with a failure status code (EXIT_FAILURE).
+
+If pid is less than 0, it means an error occurred during the fork operation. In this case, the perror function is called to print an error message indicating the failure.
+
+If none of the above conditions are met, it means the code is executing in the parent process. Inside the parent process, it enters a do-while loop that waits for the child process to finish executing. The waitpid function is used to wait for the child process to change state. The status variable is used to store the exit status of the child process.
+
+The do-while loop continues to execute as long as the child process has not exited normally (WIFEXITED(status)) or has not been terminated by a signal (WIFSIGNALED(status)).
+
+Once the child process has exited or been terminated, the do-while loop is exited, and the parent process continues execution.
+
+The function returns -1, indicating an error occurred during the execution of the external command.
+
+In summary, this code defines a function new_process that creates a new process using fork and executes an external command using execvp. It handles different scenarios such as errors during process creation or command execution. The parent process waits for the child process to finish executing before returning.
+
+
+
+/* new_process.c */
+#include "shell.h"
+
+/**
+ * new_process - create a new process
+ * @args: array of strings that contains the command and its flags
+ *
+ * Return: 1 if success, 0 otherwise.
+ */
+ 
+int new_process(char **args)
+{
+ pid_t pid;
+ int status;
+
+pid = fork();
+ if (pid ==  0)
+ {
+  /* child process */
+  if (execvp(args[0], args) == -1)
+  {
+   perror("error in new_process: child process");
+  }
+  exit(EXIT_FAILURE);
+ }
+ else if (pid < 0)
+ {
+  /* error forking */
+  perror("error in new_process: forking");
+ }
+ else
+ {
+  /* parent process */
+  do {
+   waitpid(pid, &status, WUNTRACED);
+  } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+ }
+ return (-1);
+}
+
+
+
+The code includes the "shell.h" header file, which presumably contains the necessary libraries and function declarations for the code to work.
+
+The shell_no_interactive function is defined, which is responsible for executing the shell commands when the program is not run in an interactive mode (i.e., when input is not coming from a terminal).
+
+The function has a return type of void, indicating that it does not return a value.
+
+The function begins by declaring variables line, args, and status. line is a pointer to a string that will store the input line, args is a pointer to an array of strings that will store the tokenized command and its arguments, and status is an integer that will store the return status of the command execution.
+
+The code enters a do-while loop, which will continue executing until the status is not equal to -1 (indicating a successful command execution) or an error occurs.
+
+Inside the loop, the code calls the read_stream function to read a line from the input stream. The line is then assigned to the line variable.
+
+Next, the code calls the split_line function to tokenize the line into individual command and argument strings, which are stored in the args array.
+
+The code then calls the execute_args function to execute the command and arguments stored in the args array. The return value of execute_args is assigned to the status variable.
+
+After executing the command, the code frees the memory allocated for the line and args arrays to avoid memory leaks.
+
+If the status value is greater than or equal to 0, it means the command execution was successful, and the code calls the exit function to terminate the program with the given status code.
+
+The do-while loop continues as long as the status is -1, indicating that there was no successful command execution.
+
+In summary, the shell_no_interactive function reads input lines from a non-interactive stream, tokenizes the lines into commands and arguments, and executes the commands using the execute_args function. It continues this process until a successful command execution occurs or an error is encountered.
+
+
+
+
+/* shell_no_interactive.c */
+#include "shell.h"
+
+/**
+ * shell_no_interactive - unix command line interpreter
+ *
+ * Return: void
+ */
+ 
+void shell_no_interactive(void)
+{
+ char *line;
+ char **args;
+ int status = -1;
+
+do {
+  line = read_stream();
+  args = split_line(line); /* tokenize line */
+  status = execute_args(args);
+  /* avoid memory leaks */
+  free(line);
+  free(args);
+  /* exit with status */
+  if (status >= 0)
+  {
+   exit(status);
+  }
+ } while (status == -1);
+}
+
+
+
+
+
+
+/* read_stream.c */
+#include "shell.h"
+
+/**
+ * read_stream - read a line from the stream
+ *
+ * Return: pointer that points the the read line
+ */
+ 
+char *read_stream(void)
+{
+ int bufsize = 1024;
+ int i = 0;
+ char *line = malloc(sizeof(char) * bufsize);
+ int character;
+
+if (line == NULL)
+ {
+  fprintf(stderr, "allocation error in read_stream");
+  exit(EXIT_FAILURE);
+ }
+ while (1)
+ {
+  character = getchar(); /* read first char from stream */
+  if (character == EOF)
+  {
+   free(line);
+   exit(EXIT_SUCCESS);
+  }
+  else if (character == '\n')
+  {
+   line[i] = '\0';
+   return (line);
+  }
+  else
+  {
+   line[i] = character;
+  }
+  i++;
+  if (i >= bufsize)
+  {
+   bufsize += bufsize;
+   line = realloc(line, bufsize);
+   if (line == NULL)
+   {
+    fprintf(stderr, "reallocation error in read_stream");
+    exit(EXIT_FAILURE);
+   }
+  }
+ }
+}
+
+
+
+
