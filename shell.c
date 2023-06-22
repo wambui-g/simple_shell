@@ -13,7 +13,7 @@ int main(void)
 
 	else
 
-		shell_no_interactive();
+		shell_non_interactive();
 
 
 	return (0);
