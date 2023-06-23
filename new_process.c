@@ -1,4 +1,3 @@
-/* new_process.c */
 #include "shell.h"
 
 /**
@@ -6,8 +5,7 @@
  * @args: array of strings that contains the command and its flags
  *
  * Return: 1 if success, 0 otherwise.
- */
- 
+ */ 
 int new_process(char **args)
 {
 	pid_t pid;
@@ -17,24 +15,25 @@ int new_process(char **args)
 
 	if (pid ==  0)
 	{
-		/* child process */
 		if (execvp(args[0], args) == -1)
 		{
-			perror("error in new_process: child process");
+			/*perror("No such file or directory");*/
+			exit(EXIT_FAILURE);
 		}
-		exit(EXIT_FAILURE);
+		else
+			handle_path(args);
 	}
 	else if (pid < 0)
 	{
-		/* error forking */
-		perror("error in new_process: forking");
+		perror("Fork failure\n");
 	}
 	else
 	{
-		/* parent process */
-		do {
+		do
+		{
 			waitpid(pid, &status, WUNTRACED);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 	}
+
 	return (-1);
 }
