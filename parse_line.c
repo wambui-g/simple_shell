@@ -6,43 +6,43 @@
  *
  * Return: pointer that points to the new array
  */
-char **split_line(char *input)
+char **parse_line(char *input)
 {
 	int bufsize = 64;
-	int i = 0;
+	int j = 0, i = 0, capacity = bufsize;
 	char **tokens = malloc(bufsize * sizeof(char *));
-	char *;
-	
+	char *token;
+	char **temp;
+
 	if (!tokens)
 	{
-		fprintf(stderr, "allocation error in split_line: tokens\n");
+		/* perror("Arguement split error\n"); */
 		exit(EXIT_FAILURE);
 	}
-	token = strtok(line, TOK_DELIM);
-	
+	token = strtok(input, TOK_DELIM);
 	while (token != NULL)
 	{
-		/* handle comments */
 		if (token[0] == '#')
 			break;
-		
+
 		tokens[i] = token;
 		i++;
-		
-		if (i >= bufsize)
+		if (i >= capacity)
 		{
-			bufsize += bufsize;
-			tokens = realloc(tokens, bufsize * sizeof(char *));
-			
-			if (!tokens)
+			capacity += bufsize;
+			temp = malloc(capacity * sizeof(char *));
+			if (!temp)
 			{
-				fprintf(stderr, "reallocation error in split_line: tokens");
+				/*perror("Allocation Error\n");*/
 				exit(EXIT_FAILURE);
 			}
+			for (; j < i; j++)
+				temp[j] = tokens[j];
+			free(tokens);
+			tokens = temp;
 		}
 		token = strtok(NULL, TOK_DELIM);
 	}
 	tokens[i] = NULL;
-	
 	return (tokens);
 }
