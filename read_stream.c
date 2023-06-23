@@ -7,46 +7,44 @@
  */
 char *read_stream(void)
 {
-	int bufsize = 1024;
-	int i = 0;
+	int bufsize = 1024, i = 0, j = 0, character;
 	char *input = malloc(sizeof(char) * bufsize);
-	int character;
+	char *temp;
 
-	if (line == NULL)
+	if (input == NULL)
 	{
-		fprintf(stderr, "allocation error in read_stream");
+		perror("Memory Allocation Error");
 		exit(EXIT_FAILURE);
 	}
 	while (1)
 	{
-		character = getchar(); /* read first char from stream */
-
+		character = read(STDIN_FILENO, input, sizeof(input));
 		if (character == EOF)
 		{
-			free(line);
+			free(input);
 			exit(EXIT_SUCCESS);
 		}
 		else if (character == '\n')
 		{
-			line[i] = '\0';
-			return (line);
+			input[i] = '\0';
+			return (input);
 		}
 		else
-		{
-			line[i] = character;
-		}
+			input[i] = character;
 		i++;
-
 		if (i >= bufsize)
 		{
 			bufsize += bufsize;
-			line = realloc(line, bufsize);
-
-			if (line == NULL)
+			temp = malloc(sizeof(char) * bufsize);
+			if (temp == NULL)
 			{
-				fprintf(stderr, "reallocation error in read_stream");
+				perror("Memory Allocation Error\n");
 				exit(EXIT_FAILURE);
 			}
+			for (; j < i; j++)
+				temp[j] = input[j];
+			free(input);
+			input = temp;
 		}
 	}
 }
