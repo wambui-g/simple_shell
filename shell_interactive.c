@@ -15,9 +15,9 @@ void shell_interactive(void)
 	while (status == -1)
 	{
 		write(STDOUT_FILENO, prompt, sizeof(prompt) - 1);
-		line = read_line();
-		/* args = split_line(line); */
-		/* status = execute_args(args);*/
+		input = read_line();
+		args = parse_line(input);
+		status = new_process(args);
 		
 		/* avoid memory leaks */
 		free(input);
