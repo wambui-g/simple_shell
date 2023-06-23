@@ -20,7 +20,7 @@ void shell_non_interactive(void);
 /* shell_interactive.c */
 char *read_line(void);
 char **pars_line(char *input);
-int execute_args(char **args);
+void exec_cmd(char *cmd);
 
 /* execute_args */
 int new_process(char **args);
