@@ -15,7 +15,10 @@ void shell_non_interactive(void)
 	{
 		input = read_stream();
 		args = split_line(line); /* tokenize line */
-		/* status = execute_args(args);*/
+
+		if (args[0] != NULL)
+			exec_cmd(args[0]);
+
 		/* avoid memory leaks */
 		free(line);
 		free(args);
