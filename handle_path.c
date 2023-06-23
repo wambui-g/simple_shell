@@ -5,7 +5,7 @@
  *
  * Return: void
  */
-void handle_path(void)
+void handle_path(char **args)
 {
 	char *command_path = NULL;
 	char *path = getenv("PATH");
@@ -14,7 +14,7 @@ void handle_path(void)
 	while (dir != NULL)
 	{
 		char file_path[1024];
-		snprintf(file_path, sizeof(file_path), "%s%s", dir, command);
+		snprintf(file_path, sizeof(file_path), "%s%s", dir, args[0]);
 		if (access(file_path, X_OK) == 0)
 		{
 			command_path = strdup(file_path);
@@ -24,13 +24,13 @@ void handle_path(void)
 	}
 	if (command_path != NULL)
 	{
-		execve(command_path, arguements, NULL);
+		execve(command_path, args, NULL);
 		perror("Execve failed");
 		_exit(1);
 	}
 	else
 	{
-		perror("command not found\n")
+		perror("command not found\n");
 		_exit(1);
 	}
 }
