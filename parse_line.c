@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * split_line - split a string into multiple strings
+ * parse_line- split a string into multiple strings
  * @input: string to be splited
  *
  * Return: pointer that points to the new array
