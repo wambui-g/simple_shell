@@ -24,6 +24,7 @@ void exec_cmd(char *cmd);
 
 /* execute_args */
 int new_process(char **args);
+void handle_path(char **args);
 
 /* shell_no_interactive */
 char *read_stream(void);
