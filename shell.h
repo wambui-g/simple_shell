@@ -19,7 +19,7 @@ void shell_non_interactive(void);
 
 /* shell_interactive.c */
 char *read_line(void);
-char **pars_line(char *input);
+char **parse_line(char *input);
 void exec_cmd(char *cmd);
 
 /* execute_args */
