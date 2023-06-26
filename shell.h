@@ -28,7 +28,6 @@ void handle_path(char **args);
 
 /* shell_no_interactive */
 char *read_stream(void);
-/* char **split_line(char *line) */
 
 /*---Builtin func---*/
 int own_cd(char **args);

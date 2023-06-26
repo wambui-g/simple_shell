@@ -15,11 +15,13 @@ void shell_non_interactive(void)
 	while (status == -1)
 	{
 		input = read_stream();
-		args = split_line(input); /* tokenize line */
+		args = parse_line(input); /* tokenize line */
 
 		if (args[0] != NULL)
-			status = (exec_cmd(args[0]) == 0) ? 0 : -1;
-
+		{
+			exec_cmd(args[0]);
+			status = 0;
+		}
 		/* avoid memory leaks */
 		free(input);
 		free(args);
