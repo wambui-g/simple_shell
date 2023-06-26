@@ -10,7 +10,12 @@
 
 void exec_cmd(char *cmd)
 {
-	char *args[] = {"/bin/sh", "-c", cmd, NULL};
+	char *args[] = {0};
+
+	args[0] = "/bin/sh";
+	args[1] = "-c";
+	args[2] = cmd;
+	args[3] = NULL;
 
 	if (execve(args[0], args, NULL) == -1)
 	{

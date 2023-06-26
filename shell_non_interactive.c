@@ -5,6 +5,7 @@
  *
  * Return: void
  */
+
 void shell_non_interactive(void)
 {
 	char *input;
@@ -14,13 +15,13 @@ void shell_non_interactive(void)
 	while (status == -1)
 	{
 		input = read_stream();
-		args = split_line(line); /* tokenize line */
+		args = split_line(input); /* tokenize line */
 
 		if (args[0] != NULL)
-			exec_cmd(args[0]);
+			status = (exec_cmd(args[0]) == 0) ? 0 : -1;
 
 		/* avoid memory leaks */
-		free(line);
+		free(input);
 		free(args);
 		/* exit with status */
 		if (status >= 0)
