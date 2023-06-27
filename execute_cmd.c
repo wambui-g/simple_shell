@@ -3,23 +3,35 @@
 /**
  * exec_cmd - argument handling with exit functionality
  *
- * @cmd: command to be taken in CLI
+ * @cmd: command to be executed in CLI
  *
- * Return: void
+ * Return: 0 for success, otherwise -1
  */
 
-void exec_cmd(char *cmd)
+int exec_cmd(char *cmd)
 {
-	char *args[] = {0};
+	pid_t pid;
+	int status;
+	char *args[];
 
-	args[0] = "/bin/sh";
-	args[1] = "-c";
-	args[2] = cmd;
-	args[3] = NULL;
+	pid = fork();
 
-	if (execve(args[0], args, NULL) == -1)
+	if (pid == -1)
 	{
-		perror("execve");
+		perror("Fork failure");
 		exit(EXIT_FAILURE);
+	}
+	else if (pid == 0)
+	{
+		char *args[] = { "/bin/sh", "-c", cmd, NULL };
+
+		execvp(args[0], args);
+		perror("execvp");
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		waitpid(pid, &status, 0);
+		return (status);
 	}
 }

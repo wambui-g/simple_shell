@@ -19,14 +19,16 @@ void shell_non_interactive(void)
 
 		if (args[0] != NULL)
 		{
-			exec_cmd(args[0]);
-			status = 0;
+			if (strcmp(args[0], "exit") == 0)
+			{
+				free(input);
+				free(args);
+				exit(EXIT_SUCCESS);
+			}
+			status = exec_cmd(args[0]);
 		}
 		/* avoid memory leaks */
 		free(input);
 		free(args);
-		/* exit with status */
-		if (status >= 0)
-			exit(status);
 	}
 }
