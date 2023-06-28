@@ -15,7 +15,6 @@ extern char **environ;
 /*---PROTOTYPES---*/
 /* main.c */
 void shell_interactive(void);
-void shell_non_interactive(void);
 
 /* shell_interactive.c */
 char *read_line(void);
@@ -25,14 +24,5 @@ int exec_cmd(char *cmd);
 /* execute_args */
 int new_process(char **args);
 void handle_path(char **args);
-
-/* shell_no_interactive */
-char *read_stream(void);
-
-/*---Builtin func---*/
-int own_cd(char **args);
-int own_exit(char **args);
-int own_env(char **args);
-int own_help(char **args);
 
 #endif
