@@ -31,7 +31,7 @@ void handle_path(char **args)
 	}
 	else
 	{
-		perror("command not found\n");
+		/*perror("command not found\n");*/
 		_exit(1);
 	}
 }
