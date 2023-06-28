@@ -2,6 +2,7 @@
 
 /**
  * handle_path - handles path
+ * @args: array with arguements
  *
  * Return: void
  */
@@ -10,10 +11,10 @@ void handle_path(char **args)
 	char *command_path = NULL;
 	char *path = getenv("PATH");
 	char *dir = strtok(path, ":");
+	char file_path[1024];
 
 	while (dir != NULL)
 	{
-		char file_path[1024];
 		snprintf(file_path, sizeof(file_path), "%s%s", dir, args[0]);
 		if (access(file_path, X_OK) == 0)
 		{
