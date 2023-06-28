@@ -1,4 +1,21 @@
 #include "shell.h"
+/**
+ * _strcmp- compare strings
+ * @str1: first string
+ * @str2: second string
+ *
+ * Return: int
+ */
+int _strcmp(const char *str1, const char *str2)
+{
+	while (*str1 && (*str1 == *str2))
+	{
+		str1++;
+		str2++;
+	}
+
+	return (*(unsigned char *)str1 - *(unsigned char *)str2);
+}
 
 /**
  * new_process - create a new process
@@ -10,6 +27,14 @@ int new_process(char **args)
 {
 	pid_t pid;
 	int status;
+	char *is_exit = "exit";
+	char *error = ": command not found\n";
+
+	if (args[0] == NULL)
+		return (-1);
+
+	if (_strcmp(args[0], is_exit) == 0)
+		exit(EXIT_SUCCESS);
 
 	pid = fork();
 
@@ -17,7 +42,8 @@ int new_process(char **args)
 	{
 		if (execvp(args[0], args) == -1)
 		{
-			perror("No such file or directory");
+			/*write(STDERR_FILENO, args[0], sizeof(args));*/
+			perror(error);
 			exit(EXIT_FAILURE);
 		}
 		else
