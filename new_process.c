@@ -1,5 +1,4 @@
 #include "shell.h"
-#include <libgen.h>
 
 /**
  * _strcmp- compare strings
@@ -45,10 +44,7 @@ int new_process(char **args)
 	{
 		if (execvp(args[0], args) == -1)
 		{
-			/*write(STDERR_FILENO, prog_name, sizeof(prog_name));*/
-			/*write(STDERR_FILENO, ": ", 2);*/
-			write(STDERR_FILENO, args[0], sizeof(args));
-			perror(" ");
+			error_handler(basename(args[0]), args[0]);
 			exit(EXIT_FAILURE);
 		}
 		else
