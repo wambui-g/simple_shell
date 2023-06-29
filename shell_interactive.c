@@ -18,11 +18,11 @@ void shell_interactive(void)
 		input = read_line();
 		args = parse_line(input);
 		status = new_process(args);
-	
+
 		/* avoid memory leaks */
 		free(input);
 		free(args);
-	
+
 		/* exit with status */
 		if (status >= 0)
 			exit(status);
